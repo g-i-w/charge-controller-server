@@ -1,7 +1,13 @@
 import canoedb.*;
 import paddle.*;
 
-public class ChargeControllerServer ( String databaseDirectory ) extends ServerState {
+public class ChargeControllerServer extends ServerState {
+
+	private String databaseDirectory;
+	
+	public ChargeControllerServer ( String databaseDirectory ) {
+		this.databaseDirectory = databaseDirectory;
+	}
 
 	public void respond ( InboundHTTP session ) {
 		count++;
@@ -14,11 +20,11 @@ public class ChargeControllerServer ( String databaseDirectory ) extends ServerS
 	}
 	
 	public static main (String[] args) {
-		Database chargeControllerData = new Database( databaseDirectory );
+		Database database = new Database( databaseDirectory );
 		ServerHTTP webUI = new ServerHTTP( this, 8080, "Charge Controller Server - Web UI" );
 		
-		
-		new OutboundTCP();
+		while(1) {
+			new OutboundTCP(             );
 		
 	}
 }
