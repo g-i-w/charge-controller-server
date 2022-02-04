@@ -92,13 +92,10 @@ public class MorningStarController extends ServerState {
 		return name()+" : "+registers.toString();
 	}
 	
-	public double scaledValue ( int function, int unscaledReg, int intScaleReg, int fracScaleReg ) {
-		double unscaled = (double)register( function, unscaledReg );
+	public double scalar ( int function, int intScaleReg, int fracScaleReg ) {
 		double intScalar = (double)register( function, intScaleReg );
 		double fracScalar = (double)register( function, fracScaleReg );
-		double scalar =  intScalar + fracScalar/65536; // first + second/2^16
-		System.out.println( "intScalar: "+intScalar+", fracScalar: "+fracScalar+", scalar: "+scalar );
-		return scalar*unscaled/32768;
+		return intScalar + fracScalar/65536; // first + second/2^16
 	}
 	
 	public static void main ( String[] args ) throws Exception {
@@ -107,11 +104,11 @@ public class MorningStarController extends ServerState {
 		msc.read( 3, 0, 30 );
 		Thread.sleep(1000);
 		System.out.println( msc );
-		System.out.println( "Battery Voltage: "+msc.scaledValue( 3, 0x0018, 0x0000, 0x0001 ) );
-		System.out.println( "Battery Terminal Voltage: "+msc.scaledValue( 3, 0x0019, 0x0000, 0x0001 ) );
-		System.out.println( "Battery Current: "+msc.scaledValue( 3, 0x001C, 0x0002, 0x0003 ) );
-		System.out.println( "Array Voltage: "+msc.scaledValue( 3, 0x001B, 0x0000, 0x0001 ) );
-		System.out.println( "Array Current: "+msc.scaledValue( 3, 0x001D, 0x0002, 0x0003 ) );
+		System.out.println( "Battery Voltage: "+msc.register( 3, 0x0018 )*msc.scalar( 3, 0x0000, 0x0001 )/32768 );
+		System.out.println( "Battery Terminal Voltage: "+msc.register( 3, 0x0019 )*msc.scalar( 3, 0x0000, 0x0001 )/32768 );
+		System.out.println( "Battery Current: "+msc.register( 3, 0x001C )*msc.scalar( 3, 0x0002, 0x0003 )/32768 );
+		System.out.println( "Array Voltage: "+msc.register( 3, 0x001B )*msc.scalar( 3, 0x0000, 0x0001 )/32768 );
+		System.out.println( "Array Current: "+msc.register( 3, 0x001D )*msc.scalar( 3, 0x0002, 0x0003 )/32768 );
 	}
 }
 
