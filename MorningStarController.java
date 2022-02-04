@@ -57,6 +57,11 @@ public class MorningStarController extends ServerState {
 			}
 			for (int i=3; i<csvTextArray.length; i+=2) {
 				int upper = Integer.parseInt(csvTextArray[i]);
+				if ((0x80 & upper) == 0x80) {
+					//System.out.println( "upper before: "+upper );
+					upper = ((-1)<<8)|upper;
+					//System.out.println( "upper after: "+upper );
+				};
 				int upperShifted = upper << 8;
 				int lower = Integer.parseInt(csvTextArray[i+1]);
 				int combinedValue = upperShifted + lower;
@@ -101,8 +106,8 @@ public class MorningStarController extends ServerState {
 	public static void main ( String[] args ) throws Exception {
 		MorningStarController msc = new MorningStarController( args[0], 80, 1 );
 		System.out.println( msc );
-		msc.read( 3, 0, 30 );
-		Thread.sleep(1000);
+		msc.read( 3, 0, 91 );
+		Thread.sleep(2000);
 		System.out.println( msc );
 		System.out.println( "Battery Voltage: "+msc.register( 3, 0x0018 )*msc.scalar( 3, 0x0000, 0x0001 )/32768 );
 		System.out.println( "Battery Terminal Voltage: "+msc.register( 3, 0x0019 )*msc.scalar( 3, 0x0000, 0x0001 )/32768 );
