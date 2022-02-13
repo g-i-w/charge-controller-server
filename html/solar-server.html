@@ -1,7 +1,8 @@
+<!DOCTYPE html>
 <html>
 <head>
 <title>SolarServer</title>
-<meta http-equiv="refresh" content="5">
+<meta http-equiv="refresh" content="30">
 <style>
 	body {
 		color: gray;
@@ -24,21 +25,81 @@
 </head>
 <body>
 	<table>
+	
 	<tr>
-		<td>Battery Charge:</td><td style="font-size:48px;color:////battery_charge_color////">////battery_charge////</td>
+		<td>Battery Charge:</td>
+		<td style="font-size:48px;color:////battery_charge_color////">////battery_charge////</td>
 		<td style="font-size:48px;color:////battery_charge_color////">%</td>
+		<td rowspan=5><div id="battery_graph"></div></td>
 	</tr>
+	<tr><td>Battery Life:</td><td>////battery_life////</td><td>////battery_life_unit////</td></tr>
 	<tr><td>Battery Voltage:</td><td>////battery_voltage////</td><td>V</td></tr>
 	<tr><td>Battery Current:</td><td>////battery_current////</td><td>A</td></tr>
 	<tr><td>Battery Temp:</td><td>////battery_temp////</td><td>F</td></tr>
-	<tr><td>Array Voltage:</td><td>////array_voltage////</td><td>V</td></tr>
+	
+	<tr>
+		<td>Array Voltage:</td>
+		<td>////array_voltage////</td>
+		<td>V</td>
+		<td rowspan=3><div id="array_graph"></div></td>
+	</tr>
 	<tr><td>Array Current:</td><td>////array_current////</td><td>A</td></tr>
 	<tr><td>Output Power:</td><td>////output_power////</td><td>////output_power_unit////</td></tr>
+	<tr><td>Array Usage:</td><td>////array_power_percent_used////</td><td>%</td></tr>
+	
 	</table>
 	
-<script src="plotly"></script>
+<script src="plotly.js"></script>
 <script>
-	
+	var layout = {
+	  autosize: false,
+	  width: 400,
+	  height: 200,
+	  margin: {
+	    l: 50,
+	    r: 50,
+	    b: 20,
+	    t: 10,
+	    pad: 4
+	  }
+	  ,
+	  color: "rgba(255,255,255,1.0)",
+	  plot_bgcolor: "rgba(0,0,0,0)",
+	  paper_bgcolor: "rgba(0,0,0,0)",
+	  //plot_bgcolor: '#c7c7c7'
+	};
+
+	var chargeHistory = {
+	  x: [////battery_charge_time////],
+	  y: [////battery_charge_data////],
+	  fill: 'tozeroy',
+	  type: 'scatter'
+	};
+
+	var voltHistory = {
+	  x: [////battery_voltage_time////],
+	  y: [////battery_voltage_data////],
+	  fill: 'tonexty',
+	  type: 'scatter'
+	};
+
+	Plotly.newPlot('battery_graph', [chargeHistory, voltHistory], layout );
+
+	var arrayPowerUsed = {
+	  x: [////array_power_used_time////],
+	  y: [////array_power_used_data////],
+	  fill: 'tozeroy',
+	  type: 'scatter'
+	};
+
+	var arrayPowerMax = {
+	  x: [////array_power_max_time////],
+	  y: [////array_power_max_data////],
+	  fill: 'tonexty',
+	  type: 'scatter'
+	};
+
+	Plotly.newPlot('array_graph', [arrayPowerUsed, arrayPowerMax], layout);
 </script>
 </body>
 </html>
