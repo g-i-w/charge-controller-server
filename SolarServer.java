@@ -18,6 +18,11 @@ public class SolarServer extends ServerState {
 	private double c_to_f ( double c ) { return 9.0/5.0*c + 32.0; }
 	
 	private String dec ( double value, int places ) { return String.format("%."+places+"f",value); }
+	
+	private void readTriStar () throws Exception {
+		ts.read( 3, 0, 91 );
+		Thread.sleep(5000);
+	}
 
 	public void respond ( InboundHTTP session ) {
 		System.out.println( "path requested: "+session.request().path() );
@@ -27,13 +32,15 @@ public class SolarServer extends ServerState {
 			session.response().setBody( plotly );
 		} else if (session.path("/")) {
 			double chargePercent = bat.charge()*100;
-			double hoursRemaining = bat.chargeTimeIntercept(0.15)/3600.0;
+			double hoursRemaining = bat.chargeTimeIntercept(0.15)/60.0;
 			html.replace( new String[]{
 				"battery_charge", dec( chargePercent, 0 ),
 				"battery_charge_color", (chargePercent >= 60 ? "green" : (chargePercent >= 30 ? "yellow" : "red" )),
 				"battery_life", ( hoursRemaining > 0 && hoursRemaining < 48  ? dec( hoursRemaining, 1 ) : "-" ),
-				"battery_life_unit", "Hours",
+				//"battery_life", dec( hoursRemaining, 4 ),
+				"battery_life_unit", "Hrs",
 				"battery_voltage", dec( ts.battery_voltage(), 1 ),
+				"battery_voltage_slope", dec( bat.voltageSlope(), 3),
 				"battery_current", dec( ts.battery_current(), 1 ),
 				"battery_temp", dec( c_to_f(ts.battery_temp()), 1 ),
 				"battery_voltage_data", voltHist.dataCSV(),
@@ -41,7 +48,8 @@ public class SolarServer extends ServerState {
 				"battery_charge_data", chargeHist.dataCSV(),
 				"battery_charge_time", chargeHist.timeCSV(),
 				"output_power", dec( ts.output_power(), 0 ),
-				"output_power_unit", "W",
+				"power_unit", "W",
+				"input_power_max", dec( ts.input_power_max(), 0 ),
 				"array_voltage", dec( ts.array_voltage(), 1 ),
 				"array_current", dec( ts.array_current(), 1 ),
 				"array_power_percent_used", dec(ts.input_power()/ts.input_power_max()*100, 0),
@@ -61,17 +69,17 @@ public class SolarServer extends ServerState {
 		ts 		= new TriStarMPPT( controllerAddress );
 		//new Database( args[0] );
 		http 		= new ServerHTTP( this, serverPort, this.getClass().getName()+":"+serverPort );
-		bat 		= new Battery	( 5, 5*60/5 ); // 5sec, 5min
-		chargeHist 	= new Timeline	( 5*60/5 ); // 5 min
-		voltHist 	= new Timeline	( 5*60/5 ); // 5 min
-		powerHist 	= new Timeline	( 24*60*60/5 ); // 24 hours
-		powerMaxHist 	= new Timeline	( 24*60*60/5 ); // 24 hours
+		readTriStar();
+		bat 		= new Battery	( 5, 5*60/5, ts.battery_voltage()/4 ); // 5sec, 5min
+		chargeHist 	= new Timeline	( 4*60*60/5, "HH:mm:ss" ); // 4 hours
+		voltHist 	= new Timeline	( 4*60*60/5, "HH:mm:ss" ); // 4 hours
+		powerHist 	= new Timeline	( 24*60*60/5, "HH:mm:ss" ); // 24 hours
+		powerMaxHist 	= new Timeline	( 24*60*60/5, "HH:mm:ss" ); // 24 hours
 		while (true) {
 			try {
-				ts.read( 3, 0, 91 );
-				Thread.sleep(5000);
+				readTriStar();
 				bat.sample( ts.battery_voltage()/4, ts.battery_temp() );
-				voltHist.sample( bat.voltageNormalized() );
+				voltHist.sample( bat.voltageSlope() );
 				chargeHist.sample( bat.charge() );
 				powerHist.sample( ts.input_power() );
 				powerMaxHist.sample( ts.input_power_max() );

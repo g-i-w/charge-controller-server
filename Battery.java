@@ -6,7 +6,7 @@ public class Battery {
 	private double currentVoltage;
 	private double previousVoltage;
 	
-	private FIRFilter chargeFilter;
+	//private FIRFilter chargeFilter;
 	private double currentCharge;
 	private double previousCharge;
 	
@@ -18,7 +18,7 @@ public class Battery {
 	private double[] voltageCharging50C;
 	private double[] percent;
 	
-	public Battery ( int samplePeriod, int cutoffFreqPeriod ) {
+	public Battery ( int samplePeriod, int cutoffFreqPeriod, double initVoltage ) {
 		this(
 			samplePeriod,
 			cutoffFreqPeriod,
@@ -74,28 +74,40 @@ public class Battery {
 				0.2,
 				0.1,
 				0.0
-			}
+			},
+			initVoltage
 		);
 	}
 	
-	public Battery ( int samplePeriod, int cutoffFreqPeriod, double[] voltageDischarging, double[] voltageChargingNeg40C, double[] voltageCharging50C, double[] percent ) {
+	public Battery (
+		int samplePeriod,
+		int cutoffFreqPeriod,
+		double[] voltageDischarging,
+		double[] voltageChargingNeg40C,
+		double[] voltageCharging50C,
+		double[] percent,
+		double initVoltage
+	) {
 		this.voltageDischarging = voltageDischarging;
 		this.voltageChargingNeg40C = voltageChargingNeg40C;
 		this.voltageCharging50C = voltageCharging50C;
 		this.percent = percent;
 		currentVoltage = 0.0;
 		previousVoltage = 0.0;
-		voltageFilter = new FIRFilter(cutoffFreqPeriod/(2*samplePeriod));
-		chargeFilter = new FIRFilter(cutoffFreqPeriod/(2*samplePeriod));
+		int filterLen = cutoffFreqPeriod/(2*samplePeriod);
+		voltageFilter = new FIRFilter(filterLen, initVoltage);
+		//chargeFilter = new FIRFilter(filterLen);
 	}
 	
 	public void sample ( double v, double temp ) {
 		previousTime = currentTime;
 		currentTime = System.currentTimeMillis();
+		
 		previousVoltage = currentVoltage;
 		currentVoltage = voltageFilter.sample( v );
+		
 		previousCharge = currentCharge;
-		currentCharge = chargeFilter.sample( chargePercent( v, temp ) );
+		currentCharge = chargePercent( currentVoltage, temp );
 	}
 	
 	public double voltage () {
@@ -106,20 +118,20 @@ public class Battery {
 		return currentVoltage/voltageDischarging[0];
 	}
 	
-	public double voltageSlope () {
-		return (currentVoltage-previousVoltage)/((double)(currentTime-previousTime)/1000.0);
+	public double voltageSlope () { // volts/minute
+		return (currentVoltage-previousVoltage)/((double)(currentTime-previousTime)/60000.0);
 	}
 	
 	public double charge () {
 		return currentCharge;
 	}
 	
-	public double chargeSlope () {
-		return (currentVoltage-previousVoltage)/((double)(currentTime-previousTime)/1000.0);
+	public double chargeSlope () { // percent/minute
+		return (currentCharge-previousCharge)/((double)(currentTime-previousTime)/60000.0);
 	}
 	
-	public double chargeTimeIntercept ( double chargeFinal ) {
-		return (chargeFinal-currentCharge)*(currentTime-previousTime)/(currentCharge-previousCharge)+currentTime;
+	public double chargeTimeIntercept ( double chargeFinal ) { // minutes_into_future
+		return ( (chargeFinal-currentCharge) * ((currentTime-previousTime)/(currentCharge-previousCharge)) + currentTime )/60000.0;
 	}
 	
 	// used for testing
@@ -153,7 +165,7 @@ public class Battery {
 	}
 	
 	public double[] createVoltageTable( double batteryTemp ) {
-		if (voltageSlope() <= 0) {
+		if (voltageSlope() <= -0.1) {
 			return voltageDischarging;
 		} else {
 			double[] voltageAtTemp = new double[voltageDischarging.length];

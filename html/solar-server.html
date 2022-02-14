@@ -24,79 +24,99 @@
 </style>
 </head>
 <body>
-	<table>
-	
+
+<table>
 	<tr>
-		<td>Battery Charge:</td>
-		<td style="font-size:48px;color:////battery_charge_color////">////battery_charge////</td>
-		<td style="font-size:48px;color:////battery_charge_color////">%</td>
-		<td rowspan=5><div id="battery_graph"></div></td>
+	<td>
+
+		<table>
+		
+		<tr>
+			<td style="font-size:16px;">Battery Charge:</td>
+			<td style="font-size:48px;color:////battery_charge_color////;">////battery_charge////</td>
+			<td style="font-size:48px;color:////battery_charge_color////;">%</td>
+		</tr>
+		<tr><td style="font-size:16px;">Battery Life:</td><td>////battery_life////</td><td>////battery_life_unit////</td></tr>
+		<!--<tr><td>Battery Voltage:</td><td>////battery_voltage////, ////battery_voltage_slope////</td><td>V, V/min</td></tr>-->
+		<tr><td style="font-size:16px;">Battery Voltage:</td><td style="color:yellow;">////battery_voltage////</td><td style="color:yellow;">V</td></tr>
+		<tr><td style="font-size:16px;">Battery Current:</td><td>////battery_current////</td><td>A</td></tr>
+		<tr><td style="font-size:16px;">Battery Temp:</td><td>////battery_temp////</td><td>F</td></tr>
+		
+		<tr><td style="font-size:16px;">Array Voltage:</td><td>////array_voltage////</td><td>V</td></tr>
+		<tr><td style="font-size:16px;">Array Current:</td><td>////array_current////</td><td>A</td></tr>
+		<tr><td style="font-size:16px;">Array Power Available:</td><td style="color:#5555ff;">////input_power_max////</td><td style="color:#5555ff;">////power_unit////</td></tr>
+		<tr><td style="font-size:16px;">Array Power Used:</td><td style="color:orange;">////output_power////</td><td style="color:orange;">////power_unit////</td></tr>
+		<!--<tr><td>Array Usage:</td><td style="color:orange;">////array_power_percent_used////</td><td style="color:orange;">%</td></tr>-->
+		
+		</table>
+	</td>
+	<td>
+		<div id="battery_graph"></div>
+		<div id="array_graph"></div>
+	</td>
 	</tr>
-	<tr><td>Battery Life:</td><td>////battery_life////</td><td>////battery_life_unit////</td></tr>
-	<tr><td>Battery Voltage:</td><td>////battery_voltage////</td><td>V</td></tr>
-	<tr><td>Battery Current:</td><td>////battery_current////</td><td>A</td></tr>
-	<tr><td>Battery Temp:</td><td>////battery_temp////</td><td>F</td></tr>
-	
-	<tr>
-		<td>Array Voltage:</td>
-		<td>////array_voltage////</td>
-		<td>V</td>
-		<td rowspan=3><div id="array_graph"></div></td>
-	</tr>
-	<tr><td>Array Current:</td><td>////array_current////</td><td>A</td></tr>
-	<tr><td>Output Power:</td><td>////output_power////</td><td>////output_power_unit////</td></tr>
-	<tr><td>Array Usage:</td><td>////array_power_percent_used////</td><td>%</td></tr>
-	
-	</table>
+</table>
+		
 	
 <script src="plotly.js"></script>
 <script>
 	var layout = {
 	  autosize: false,
-	  width: 400,
-	  height: 200,
+	  width: 500,
+	  height: 250,
 	  margin: {
 	    l: 50,
 	    r: 50,
-	    b: 20,
+	    b: 50,
 	    t: 10,
 	    pad: 4
-	  }
-	  ,
+	  },
 	  color: "rgba(255,255,255,1.0)",
 	  plot_bgcolor: "rgba(0,0,0,0)",
 	  paper_bgcolor: "rgba(0,0,0,0)",
-	  //plot_bgcolor: '#c7c7c7'
+	  xaxis: {
+	  	tickformat: '%H:%M',
+	  	nticks: 4,
+	  	title: 'Time'
+	  }
 	};
 
 	var chargeHistory = {
 	  x: [////battery_charge_time////],
 	  y: [////battery_charge_data////],
-	  fill: 'tozeroy',
-	  type: 'scatter'
+	  fill: 'tonexty',
+	  type: 'scatter',
+	  name: 'Charge Percentage',
+	  line: {color: '////battery_charge_color////'}
 	};
 
 	var voltHistory = {
 	  x: [////battery_voltage_time////],
 	  y: [////battery_voltage_data////],
-	  fill: 'tonexty',
-	  type: 'scatter'
-	};
-
-	Plotly.newPlot('battery_graph', [chargeHistory, voltHistory], layout );
-
-	var arrayPowerUsed = {
-	  x: [////array_power_used_time////],
-	  y: [////array_power_used_data////],
 	  fill: 'tozeroy',
-	  type: 'scatter'
+	  type: 'scatter',
+	  name: 'Voltage Slope [V/min]',
+	  line: {color: 'yellow'}
 	};
+
+	Plotly.newPlot('battery_graph', [voltHistory, chargeHistory], layout );
 
 	var arrayPowerMax = {
 	  x: [////array_power_max_time////],
 	  y: [////array_power_max_data////],
 	  fill: 'tonexty',
-	  type: 'scatter'
+	  type: 'scatter',
+	  name: 'Power Available',
+	  line: {color: '#5555ff'}
+	};
+
+	var arrayPowerUsed = {
+	  x: [////array_power_used_time////],
+	  y: [////array_power_used_data////],
+	  fill: 'tozeroy',
+	  type: 'scatter',
+	  name: 'Power Used',
+	  line: {color: 'orange'}
 	};
 
 	Plotly.newPlot('array_graph', [arrayPowerUsed, arrayPowerMax], layout);

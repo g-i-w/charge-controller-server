@@ -30,7 +30,7 @@ public class MorningStarController extends ServerState {
 		int RLO = (int)byteSpace.read(3);
 		String httpReqStr = "GET /MBCSV.cgi?ID="+id+"&F="+function+"&AHI="+AHI+"&ALO="+ALO+"&RHI="+RHI+"&RLO="+RLO+" HTTP/1.1\r\n\r\n";
 		//System.out.println( "httpReqStr: "+httpReqStr );
-		OutboundTCP httpRequest = new OutboundTCP (
+		(new OutboundTCP (
 			this,
 			address,
 			port,
@@ -39,7 +39,7 @@ public class MorningStarController extends ServerState {
 			new byte[1024],
 			memAddress,
 			true
-		);
+		)).timeout(2);
 	}
 	
 	public void respond ( OutboundTCP query ) {

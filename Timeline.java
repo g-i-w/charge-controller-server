@@ -5,11 +5,13 @@ import java.util.*;
 public class Timeline {
 
 	private List<Double> data;
-	private List<String> timestamps;
+	private List<ZonedDateTime> timestamps;
 	private int length;
+	private String dateFormat; // example: "MM/dd/uu HH:mm:ss"
 	
-	public Timeline ( int length ) {
+	public Timeline ( int length, String dateFormat ) {
 		this.length = length;
+		this.dateFormat = dateFormat;
 		data = new ArrayList<>();
 		timestamps = new ArrayList<>();
 	}
@@ -19,7 +21,6 @@ public class Timeline {
 		timestamps.add(
 			ZonedDateTime
 			.now( ZoneId.systemDefault() )
-			.format( DateTimeFormatter.ofPattern( "uuuu.MM.dd.HH.mm.ss" ) )
 		);
 		if (data.size() > length) {
 			data.remove(0);
@@ -31,7 +32,7 @@ public class Timeline {
 		return data;
 	}
 
-	public List<String> time () {
+	public List<ZonedDateTime> time () {
 		return timestamps;
 	}
 	
@@ -46,7 +47,8 @@ public class Timeline {
 	public String timeCSV () {
 		String str = "";
 		for (int i=0; i<timestamps.size(); i++) {
-			str += ( i<timestamps.size()-1 ? "'"+timestamps.get(i)+"'," : "'"+timestamps.get(i)+"'" );
+			String timestamp = timestamps.get(i).format( DateTimeFormatter.ofPattern( dateFormat ) );
+			str += ( i<timestamps.size()-1 ? "'"+timestamp+"'," : "'"+timestamp+"'" );
 		}
 		return str;
 	}
