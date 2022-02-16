@@ -32,15 +32,14 @@ public class SolarServer extends ServerState {
 			session.response().setBody( plotly );
 		} else if (session.path("/")) {
 			double chargePercent = bat.charge()*100;
-			double hoursRemaining = bat.chargeTimeIntercept(0.15)/60.0;
 			html.replace( new String[]{
 				"battery_charge", dec( chargePercent, 0 ),
 				"battery_charge_color", (chargePercent >= 60 ? "green" : (chargePercent >= 30 ? "yellow" : "red" )),
-				"battery_life", ( hoursRemaining > 0 && hoursRemaining < 48  ? dec( hoursRemaining, 1 ) : "-" ),
+				//"battery_life", ( hoursRemaining > 0 && hoursRemaining < 48  ? dec( hoursRemaining, 1 ) : "-" ),
 				"charge_slope", dec( bat.chargeSlope(), 2 ),
 				"charge_slope_unit", "%/Hr",				
-				//"battery_life", dec( hoursRemaining, 4 ),
-				"battery_life_unit", "Hrs",
+				"battery_life", ( bat.chargeSlope()<0 ? dec(bat.dischargeIntercept(0.15),3) : dec(bat.chargeIntercept(),3) ),
+				"battery_life_unit", ( bat.chargeSlope()<0 ? "Hrs to 15%" : "Hrs to full" ),
 				"battery_voltage", dec( ts.battery_voltage(), 1 ),
 				"battery_voltage_slope", dec( bat.voltageSlope(), 3),
 				"battery_current", dec( ts.battery_current(), 1 ),

@@ -130,8 +130,12 @@ public class Battery {
 		return (currentCharge-previousCharge)/((double)(currentTime-previousTime)/(60*60*1000.0));
 	}
 	
-	public double chargeTimeIntercept ( double chargeFinal ) { // minutes_into_future
-		return ( (chargeFinal-currentCharge) * ((currentTime-previousTime)/(currentCharge-previousCharge)) + currentTime )/60000.0;
+	public double dischargeIntercept ( double dischargeLimit ) {
+		return (dischargeLimit - currentCharge) / chargeSlope();
+	}
+	
+	public double chargeIntercept () {
+		return (100.0 - currentCharge) / chargeSlope();
 	}
 	
 	// used for testing
