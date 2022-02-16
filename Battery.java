@@ -127,7 +127,7 @@ public class Battery {
 	}
 	
 	public double chargeSlope () { // percent/minute
-		return (currentCharge-previousCharge)/((double)(currentTime-previousTime)/60000.0);
+		return (currentCharge-previousCharge)/((double)(currentTime-previousTime)/(60*60*1000.0));
 	}
 	
 	public double chargeTimeIntercept ( double chargeFinal ) { // minutes_into_future
