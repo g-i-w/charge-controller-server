@@ -99,7 +99,7 @@ public class Battery {
 		//chargeFilter = new FIRFilter(filterLen);
 	}
 	
-	public void sample ( double v, double temp ) {
+	public void sample ( double v, double temp, boolean charging ) {
 		previousTime = currentTime;
 		currentTime = System.currentTimeMillis();
 		
@@ -107,7 +107,7 @@ public class Battery {
 		currentVoltage = voltageFilter.sample( v );
 		
 		previousCharge = currentCharge;
-		currentCharge = chargePercent( currentVoltage, temp );
+		currentCharge = chargePercent( currentVoltage, temp, charging );
 	}
 	
 	public double voltage () {
@@ -164,8 +164,8 @@ public class Battery {
 		}
 	}
 	
-	public double[] createVoltageTable( double batteryTemp ) {
-		if (voltageSlope() <= -0.1) {
+	public double[] createVoltageTable( double batteryTemp, boolean charging ) {
+		if (! charging) {
 			return voltageDischarging;
 		} else {
 			double[] voltageAtTemp = new double[voltageDischarging.length];
@@ -176,8 +176,8 @@ public class Battery {
 		}
 	}
 	
-	public double chargePercent ( double batteryVoltage, double batteryTemp ) {
-		return interpolateFromTables( batteryVoltage, createVoltageTable( batteryTemp ), percent );
+	public double chargePercent ( double batteryVoltage, double batteryTemp, boolean charging ) {
+		return interpolateFromTables( batteryVoltage, createVoltageTable( batteryTemp, charging ), percent );
 	}
 	
 }

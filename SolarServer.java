@@ -78,7 +78,7 @@ public class SolarServer extends ServerState {
 		while (true) {
 			try {
 				readTriStar();
-				bat.sample( ts.battery_voltage()/4, ts.battery_temp() );
+				bat.sample( ts.battery_voltage()/4, ts.battery_temp(), ( ts.input_power_max() - ts.input_power() > 100 ? true : false ) );
 				voltHist.sample( bat.voltageSlope() );
 				chargeHist.sample( bat.charge() );
 				powerHist.sample( ts.input_power() );
