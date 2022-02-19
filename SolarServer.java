@@ -36,9 +36,9 @@ public class SolarServer extends ServerState {
 				"battery_charge", dec( chargePercent, 0 ),
 				"battery_charge_color", (chargePercent >= 60 ? "green" : (chargePercent >= 30 ? "yellow" : "red" )),
 				//"battery_life", ( hoursRemaining > 0 && hoursRemaining < 48  ? dec( hoursRemaining, 1 ) : "-" ),
-				"charge_slope", dec( bat.chargeSlope(), 2 ),
+				"charge_slope", dec( bat.chargeSlope()*100, 0 ),
 				"charge_slope_unit", "%/Hr",				
-				"battery_life", ( bat.chargeSlope()<0 ? dec(bat.dischargeIntercept(0.15),3) : dec(bat.chargeIntercept(),3) ),
+				"battery_life", ( bat.chargeSlope()<0 ? dec(bat.dischargeIntercept(0.15),1) : dec(bat.chargeIntercept(),1) ),
 				"battery_life_unit", ( bat.chargeSlope()<0 ? "Hrs to 15%" : "Hrs to full" ),
 				"battery_voltage", dec( ts.battery_voltage(), 1 ),
 				"battery_voltage_slope", dec( bat.voltageSlope(), 3),
@@ -71,7 +71,7 @@ public class SolarServer extends ServerState {
 		//new Database( args[0] );
 		http 		= new ServerHTTP( this, serverPort, this.getClass().getName()+":"+serverPort );
 		readTriStar();
-		bat 		= new Battery	( 5, 15*60/5, ts.battery_voltage()/4 ); // 5sec, 15min
+		bat 		= new Battery	( 5, 2*60*60/5, ts.battery_voltage()/4 ); // 5sec, 2hrs
 		chargeHist 	= new Timeline	( 4*60*60/5, "HH:mm:ss" ); // 4 hours
 		voltHist 	= new Timeline	( 4*60*60/5, "HH:mm:ss" ); // 4 hours
 		powerHist 	= new Timeline	( 24*60*60/5, "HH:mm:ss" ); // 24 hours
