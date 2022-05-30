@@ -10,7 +10,7 @@ public class SolarServer extends ServerState {
 	private TriStarMPPT ts;
 	private ServerHTTP http;
 	private Battery bat;
-	private Battery batVoltage;
+	//private Battery batVoltage;
 	private Timeline voltHist;
 	private Timeline chargeHist;
 	private Timeline powerHist;
@@ -28,6 +28,10 @@ public class SolarServer extends ServerState {
 		} else {
 			return dec( value, places );
 		}
+	}
+
+	private double normalizedVoltageGraph ( double voltage, double max, double min ) {
+		return (voltage-min)/(max-min);
 	}
 	
 	private void readTriStar () throws Exception {
@@ -52,7 +56,7 @@ public class SolarServer extends ServerState {
 				"battery_life", ( bat.chargeSlope()<0 ? dec(bat.dischargeIntercept(0.30),0,24,1) : dec(bat.chargeIntercept(),0,24,1) ),
 				"battery_life_unit", ( bat.chargeSlope()<0 ? "Hrs to 30%" : "Hrs to full" ),
 				"battery_voltage", dec( ts.battery_voltage(), 2 ),
-				"battery_voltage_slope", dec( batVoltage.voltageSlope(), 3),
+				"battery_voltage_slope", dec( bat.voltageSlope(), 3),
 				"battery_current", dec( ts.battery_current(), 1 ),
 				"battery_temp", dec( c_to_f(ts.battery_temp()), 1 ),
 				"battery_voltage_data", voltHist.dataCSV(),
@@ -82,10 +86,9 @@ public class SolarServer extends ServerState {
 		//new Database( args[0] );
 		http 		= new ServerHTTP( this, serverPort, this.getClass().getName()+":"+serverPort );
 		readTriStar();
-		double initVoltage = ts.battery_voltage()/4;
-		System.out.println( "*** Starting voltage: "+initVoltage+" ***" );
-		bat 		= new Battery	( 5, 8*60*60/5, initVoltage ); // 5sec, 8hrs
-		batVoltage	= new Battery	( 5,   60*60/5, initVoltage ); // 5sec, 1hr
+		System.out.println( "*** Init voltage: "+(ts.battery_voltage()/4)+" ***" );
+		bat 		= new Battery	( 5, 8*60*60/5, ts.battery_voltage()/4 ); // 5sec, 8hrs
+		//batVoltage	= new Battery	( 5,   60*60/5, ts.battery_voltage()/4 ); // 5sec, 1hr
 		chargeHist 	= new Timeline	( 4*60*60/5, "HH:mm:ss" ); // 4 hours
 		voltHist 	= new Timeline	( 4*60*60/5, "HH:mm:ss" ); // 4 hours
 		powerHist 	= new Timeline	( 24*60*60/5, "MM/dd/uu HH:mm:ss" ); // 24 hours
@@ -94,8 +97,9 @@ public class SolarServer extends ServerState {
 			try {
 				readTriStar();
 				bat.sample( ts.battery_voltage()/4, ts.battery_temp(), ( ts.input_power_max() - ts.input_power() > 100 ? true : false ) );
-				batVoltage.sample( ts.battery_voltage()/4, ts.battery_temp(), ( ts.input_power_max() - ts.input_power() > 100 ? true : false ) );
-				voltHist.sample( batVoltage.voltageSlope() );
+				//batVoltage.sample( ts.battery_voltage()/4, ts.battery_temp(), ( ts.input_power_max() - ts.input_power() > 100 ? true : false ) );
+				//voltHist.sample( batVoltage.voltageSlope() );
+				voltHist.sample( normalizedVoltageGraph( ts.battery_voltage()/4 , 20.0, 10.0 ) );
 				chargeHist.sample( bat.charge() );
 				powerHist.sample( ts.input_power() );
 				powerMaxHist.sample( ts.input_power_max() );
