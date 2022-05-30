@@ -82,8 +82,10 @@ public class SolarServer extends ServerState {
 		//new Database( args[0] );
 		http 		= new ServerHTTP( this, serverPort, this.getClass().getName()+":"+serverPort );
 		readTriStar();
-		bat 		= new Battery	( 5, 8*60*60/5, ts.battery_voltage()/4 ); // 5sec, 8hrs
-		batVoltage	= new Battery	( 5,   60*60/5, ts.battery_voltage()/4 ); // 5sec, 1hr
+		double initVoltage = ts.battery_voltage()/4;
+		System.out.println( "*** Starting voltage: "+initVoltage+" ***" );
+		bat 		= new Battery	( 5, 8*60*60/5, initVoltage ); // 5sec, 8hrs
+		batVoltage	= new Battery	( 5,   60*60/5, initVoltage ); // 5sec, 1hr
 		chargeHist 	= new Timeline	( 4*60*60/5, "HH:mm:ss" ); // 4 hours
 		voltHist 	= new Timeline	( 4*60*60/5, "HH:mm:ss" ); // 4 hours
 		powerHist 	= new Timeline	( 24*60*60/5, "MM/dd/uu HH:mm:ss" ); // 24 hours
@@ -92,6 +94,7 @@ public class SolarServer extends ServerState {
 			try {
 				readTriStar();
 				bat.sample( ts.battery_voltage()/4, ts.battery_temp(), ( ts.input_power_max() - ts.input_power() > 100 ? true : false ) );
+				batVoltage.sample( ts.battery_voltage()/4, ts.battery_temp(), ( ts.input_power_max() - ts.input_power() > 100 ? true : false ) );
 				voltHist.sample( batVoltage.voltageSlope() );
 				chargeHist.sample( bat.charge() );
 				powerHist.sample( ts.input_power() );
