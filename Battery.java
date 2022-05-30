@@ -135,7 +135,7 @@ public class Battery {
 	}
 	
 	public double chargeIntercept () {
-		return (100.0 - currentCharge) / chargeSlope();
+		return (1.0 - currentCharge) / chargeSlope();
 	}
 	
 	// used for testing

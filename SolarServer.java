@@ -38,9 +38,9 @@ public class SolarServer extends ServerState {
 				//"battery_life", ( hoursRemaining > 0 && hoursRemaining < 48  ? dec( hoursRemaining, 1 ) : "-" ),
 				"charge_slope", dec( bat.chargeSlope()*100, 0 ),
 				"charge_slope_unit", "%/Hr",				
-				"battery_life", ( bat.chargeSlope()<0 ? dec(bat.dischargeIntercept(0.15),1) : dec(bat.chargeIntercept(),1) ),
+				"battery_life", ( bat.chargeSlope()<0 ? dec(bat.dischargeIntercept(0.15),2) : dec(bat.chargeIntercept(),2) ),
 				"battery_life_unit", ( bat.chargeSlope()<0 ? "Hrs to 15%" : "Hrs to full" ),
-				"battery_voltage", dec( ts.battery_voltage(), 1 ),
+				"battery_voltage", dec( ts.battery_voltage(), 2 ),
 				"battery_voltage_slope", dec( bat.voltageSlope(), 3),
 				"battery_current", dec( ts.battery_current(), 1 ),
 				"battery_temp", dec( c_to_f(ts.battery_temp()), 1 ),
@@ -71,11 +71,11 @@ public class SolarServer extends ServerState {
 		//new Database( args[0] );
 		http 		= new ServerHTTP( this, serverPort, this.getClass().getName()+":"+serverPort );
 		readTriStar();
-		bat 		= new Battery	( 5, 2*60*60/5, ts.battery_voltage()/4 ); // 5sec, 2hrs
+		bat 		= new Battery	( 5, 4*60*60/5, ts.battery_voltage()/4 ); // 5sec, 4hrs
 		chargeHist 	= new Timeline	( 4*60*60/5, "HH:mm:ss" ); // 4 hours
 		voltHist 	= new Timeline	( 4*60*60/5, "HH:mm:ss" ); // 4 hours
-		powerHist 	= new Timeline	( 24*60*60/5, "HH:mm:ss" ); // 24 hours
-		powerMaxHist 	= new Timeline	( 24*60*60/5, "HH:mm:ss" ); // 24 hours
+		powerHist 	= new Timeline	( 24*60*60/5, "MM/dd/uu HH:mm:ss" ); // 24 hours
+		powerMaxHist 	= new Timeline	( 24*60*60/5, "MM/dd/uu HH:mm:ss" ); // 24 hours
 		while (true) {
 			try {
 				readTriStar();
