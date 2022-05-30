@@ -99,7 +99,7 @@ public class SolarServer extends ServerState {
 				bat.sample( ts.battery_voltage()/4, ts.battery_temp(), ( ts.input_power_max() - ts.input_power() > 100 ? true : false ) );
 				//batVoltage.sample( ts.battery_voltage()/4, ts.battery_temp(), ( ts.input_power_max() - ts.input_power() > 100 ? true : false ) );
 				//voltHist.sample( batVoltage.voltageSlope() );
-				voltHist.sample( normalizedVoltageGraph( ts.battery_voltage()/4 , 12.6, 11.75 ) );
+				voltHist.sample( normalizedVoltageGraph( ts.battery_voltage()/4 , 13.2, 11.75 ) );
 				chargeHist.sample( bat.charge() );
 				powerHist.sample( ts.input_power() );
 				powerMaxHist.sample( ts.input_power_max() );

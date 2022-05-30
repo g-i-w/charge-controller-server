@@ -39,7 +39,7 @@
 		<tr><td style="font-size:16px;">Charge Slope:</td><td>////charge_slope////</td><td>////charge_slope_unit////</td></tr>
 		<tr><td style="font-size:16px;">Battery Life:</td><td>////battery_life////</td><td>////battery_life_unit////</td></tr>
 		<!--<tr><td>Battery Voltage:</td><td>////battery_voltage////, ////battery_voltage_slope////</td><td>V, V/min</td></tr>-->
-		<tr><td style="font-size:16px;">Battery Voltage:</td><td style="color:yellow;">////battery_voltage////</td><td style="color:yellow;">V</td></tr>
+		<tr><td style="font-size:16px;">Battery Voltage:</td><td style="color:lightblue;">////battery_voltage////</td><td style="color:lightblue;">V</td></tr>
 		<tr><td style="font-size:16px;">Battery Current:</td><td>////battery_current////</td><td>A</td></tr>
 		<tr><td style="font-size:16px;">Battery Temp:</td><td>////battery_temp////</td><td>F</td></tr>
 		
@@ -88,7 +88,7 @@
 	  y: [////battery_charge_data////],
 	  fill: 'tonexty',
 	  type: 'scatter',
-	  name: 'Charge Percentage',
+	  name: 'Charge',
 	  line: {color: '////battery_charge_color////'}
 	};
 
@@ -97,8 +97,8 @@
 	  y: [////battery_voltage_data////],
 	  fill: 'tozeroy',
 	  type: 'scatter',
-	  name: 'Voltage Slope [V/min]',
-	  line: {color: 'yellow'}
+	  name: 'Voltage',
+	  line: {color: 'lightblue'}
 	};
 
 	Plotly.newPlot('battery_graph', [voltHistory, chargeHistory], layout );
