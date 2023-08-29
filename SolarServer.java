@@ -79,12 +79,14 @@ public class SolarServer extends ServerState {
 	}
 
 	public SolarServer ( int serverPort, String controllerAddress, String workingDirectory ) throws Exception {
+		System.out.println( "Starting Solar Server..." );
 		html 		= new TemplateFile( workingDirectory+"/html/solar-server.html", "////" );
 		plotly 		= Files.readString( Paths.get(workingDirectory+"/html/plotly-2.8.3.min.js") );
-		//System.out.println( plotly );
+		System.out.println( "Loaded HTML files..." );
 		ts 		= new TriStarMPPT( controllerAddress );
 		//new Database( args[0] );
 		http 		= new ServerHTTP( this, serverPort, this.getClass().getName()+":"+serverPort );
+		System.out.println( "Reading from TriStarMPPT..." );
 		readTriStar();
 		System.out.println( "*** Init voltage: "+(ts.battery_voltage()/4)+" ***" );
 		bat 		= new Battery	( 5, 8*60*60/5, ts.battery_voltage()/4 ); // 5sec, 8hrs
