@@ -1,0 +1,9 @@
+[Unit]
+Description=Solar Server
+
+[Service]
+WorkingDirectory=/home/gwrw/charge-controller-server
+ExecStart=java SolarServer 7000 10.8.8.11 /home/gwrw/charge-controller-server
+
+[Install]
+WantedBy=multi-user.target

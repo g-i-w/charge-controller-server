@@ -37,11 +37,12 @@ public class Timeline {
 	}
 	
 	public String dataCSV () {
-		String str = "";
-		for (int i=0; i<data.size(); i++) {
-			str += ( i<data.size()-1 ? data.get(i)+"," : data.get(i)+"" );
+		StringBuilder str = new StringBuilder();
+		if (data.size()>0) str.append( data.get(0) );
+		for (int i=1; i<data.size(); i++) {
+			str.append( "," ).append( data.get(i) );
 		}
-		return str;
+		return str.toString();
 	}
 
 	public String timeCSV () {
