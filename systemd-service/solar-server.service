@@ -1,0 +1,9 @@
+[Unit]
+Description=Solar Server
+
+[Service]
+WorkingDirectory=<working-dir>
+ExecStart=java SolarServer <port> <ip-address> <working-dir>
+
+[Install]
+WantedBy=multi-user.target

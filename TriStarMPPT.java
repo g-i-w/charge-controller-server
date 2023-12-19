@@ -20,7 +20,8 @@ public class TriStarMPPT extends MorningStarController {
 	public double array_voltage	() { return scaledVoltage( register( 3, 0x001B ) ); }
 	public double array_current	() { return scaledCurrent( register( 3, 0x001D ) ); }
 	public double output_power	() { return scaledPower  ( register( 3, 0x003A ) ); }
-		
+	public double input_power	() { return scaledPower  ( register( 3, 0x003B ) ); }		
+	public double input_power_max	() { return scaledPower  ( register( 3, 0x003C ) ); }		
 	
 	public static void main (String[] args) throws Exception {
 		TriStarMPPT ts = new TriStarMPPT( args[0] );
@@ -32,6 +33,8 @@ public class TriStarMPPT extends MorningStarController {
 		System.out.println( "battery temp: "+ts.battery_temp() );
 		System.out.println( "battery charge: "+LeadAcidDeepCycle12V.chargePercent( ts.battery_voltage()/4, ts.battery_temp(), ts.battery_current() )*100 );
 		System.out.println( "output power: "+ts.output_power() );
+		System.out.println( "input power: "+ts.input_power() );
+		System.out.println( "input power (max): "+ts.input_power_max() );
 	}
 
 }
